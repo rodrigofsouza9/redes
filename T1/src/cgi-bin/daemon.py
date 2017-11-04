@@ -4,6 +4,39 @@ import socket
 import os
 from threading import Thread
 
+# Função que descompacta o pacote;
+# Padrão de cabeçalho estabelecido na descrição do projeto;
+def descompactaPacote(pacote):
+  cabecalho = {}
+  cabecalho['Version']             = pacote[0:4]
+  cabecalho['IHL']                 = pacote[4:8]
+  cabecalho['Type_of_Service']     = pacote[8:16]
+  cabecalho['Total_Length']        = pacote[16:32]
+  cabecalho['Identification']      = pacote[32:48]
+  cabecalho['Flags']               = pacote[48:51]
+  cabecalho['Fragment_Offset']      = pacote[51:64]
+  cabecalho['Time_to_Live']        = pacote[64:72]
+  cabecalho['Protocol']            = pacote[72:80]
+  cabecalho['Header_Checksum']     = pacote[80:96]
+  cabecalho['Source_Address']       = pacote[96:128]
+  cabecalho['Destination_Address']  = pacote[128:160]
+  
+  # Chama função que transforma bits em uma string
+  # Inplementar função que converte bits em string
+  
+  # Verifica se campo opções possui argumentos
+  # Verifica se argumentos são malicosos 
+  # Elimina argumentos maliciosos
+  if (opcoes):
+    if('|' in opcoes or ';' in opcoes or '>' in opcoes:
+     		opcoes = ''
+		else:
+        cabecalho['Options'] = opcoes
+  else:
+		cabecalho['Options'] = ''  
+		
+  return cabecalho
+
 # Função CRC16;
 # Referência http://www.feng.pucrs.br/~stemmer/processadores2/trab2-2012-2/crc.html;
 def crc16(data):
