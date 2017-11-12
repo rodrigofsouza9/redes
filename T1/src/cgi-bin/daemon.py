@@ -177,7 +177,7 @@ def conectaServidor(connectionSocket):
         	# Atualiza valor do total length com o comprimento do pacote
         	resposta['Total_Length'] = int(len(pacoteRecebido))
 			
-			headerchecksum = crc16(pacoteRecebido['Version'] + pacoteRecebido['IHL'] + pacoteRecebido['Type_of_Service'] + pacoteRecebido['Total_Length'] + pacoteRecebido['Identification'] + pacoteRecebido['Flags'] + pacoteRecebido['Fragment_Offset'] + pacoteRecebido['Time_to_Live'] + pacoteRecebido['Protocol'] + pacoteRecebido['Source_Address'] + pacoteRecebido['Destination_Address'])
+		headerchecksum = crc16(pacoteRecebido['Version'] + pacoteRecebido['IHL'] + pacoteRecebido['Type_of_Service'] + pacoteRecebido['Total_Length'] + pacoteRecebido['Identification'] + pacoteRecebido['Flags'] + pacoteRecebido['Fragment_Offset'] + pacoteRecebido['Time_to_Live'] + pacoteRecebido['Protocol'] + pacoteRecebido['Source_Address'] + pacoteRecebido['Destination_Address'])
 
         	# Compara o crc calculado com o recebido no header
         	if headerchecksum != pacoteRecebido['Header_Checksum']:
