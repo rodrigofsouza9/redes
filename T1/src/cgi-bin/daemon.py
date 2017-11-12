@@ -133,15 +133,49 @@ def recriaCabecalho(Version, IHL, Type_of_Service, Total_Length, Identification,
 
 #Funcao que sera chamada na criacao da Thread
 def conectaServidor(connectionSocket): 
-	while true:
-		# Recebe o pacote do webserver
-		pacote = connectionSocket.recv(1024)
-		
-		# Se pacote vier vazio
-		if pacote == '': break
-		
-		# Encerra a conexao
-		connectionSocket.close()
+	while 1:
+        	# Recebe o pacote do webserver
+        	pacote = connectionSocket.recv(1024)
+
+        	# Se pacote vier vazio
+        	if pacote == '': break
+
+        	# Descompacta o pacote recebido
+        	pacoteRecebido = descompactaPacote(pacote)
+
+        	# Altera os dados para o pacote resposta
+        	# Valores padroes definidos conforme a seguinte referencia :http://www.erg.abdn.ac.uk/users/gorry/course/inet-pages/ip-packet.html
+        	# Valores tambem colocados como solicitados pelo projeto
+        	# Version recebe 2
+
+        	resposta = {}
+
+        	resposta['Version'] = 2
+        	# IHL recebe 5 que eh o seu valor padrao
+        	resposta['IHL'] = 5
+        	# Type of service recebe 0
+        	resposta['Type_of_Service'] = 0
+        	# Total_Length recebe 0 pra ser calculado com o tamanho do pacote
+        	resposta['Total_Length'] = 0
+        	# Identification recebe a sua sequencia
+        	resposta['Identification'] = (int(pacoteRecebido['Identification']) + 1)
+        	# Flags recebe o 7 (111)
+        	resposta['Flags'] = 7
+        	# Fragment_Offset recebe 0
+        	resposta['Fragment_Offset'] = 0
+        	# Decrementa o TTL
+        	resposta['Time_to_Live'] = int(pacoteRecebido['Time_to_Live']) - 1
+        	# Header_Checksum recebe 0
+        	resposta['Header_Checksum'] = 0
+        	# Source_address recebe o Destination_Address que chegou
+        	resposta['Source_Address'] = int(pacoteRecebido['Destination_Address'])
+        	# Destination_Address recebe o source_address que chegou
+        	resposta['Destination_Address'] = int(pacoteRecebido['Source_Address'])
+        	# Campo de Options
+        	resposta['Options'] = BitsToString(pacoteRecebido['Options'])
+
+        	# Atualiza valor do total length com o comprimento do pacote
+        	resposta['Total_Length'] = int(len(pacoteRecebido))
 
 
 # Define a main do programa
