@@ -146,32 +146,31 @@ def conectaServidor(connectionSocket):
 
 # Define a main do programa
 # Referência capítulo 2 do livro Computer Networks and the Internet
-def main(): 
- 
-	# Estabelece a porta de conexao
-	serverPort = 12000
-
+def main():
 	# Endereço IP do host
-	serverHost = ''
-	
-	# Criando um socket TCP
-	serverSocket = socket(AF_INET,SOCK_STREAM)
+    	host = '127.0.0.1'
 
-	# Liga o socket com um host e uma porta já conhecida
-	serverSocket.bind((serverHost, serverPort))
+    	# Estabelece a porta de conexao passando como argumento pelo terminal
+    	port = int(sys.argv[1])
 
-	# Faz a ligacao com o socket e aguarda a conexao, o parametro utilizado
-	# com o listen define o tamanho maximo da fila de espera de conexoes
-	# no caso 1 conexao
-	serverSocket.listen(1)
+    	# Cria um socket TCP
+    	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-	while True:
-		
-		# Cria conexao TCP com o webserver
-		connectionSocket, addr = serverSocket.accept()
+    	# Liga o socket com um host e uma porta já conhecida
+    	serverSocket.bind((host, port))
 
-		# Cria uma thread para cada porta
-		thread.start_new_thread(target=conectaServidor, args=(connectionSocket, addr]))
+    	# Faz a ligacao com o socket e aguarda a conexao, o parametro utilizado
+    	# com o listen define o tamanho maximo da fila de espera de conexoes
+    	# no caso 3 conexoes
+    	serverSocket.listen(3)
+
+    	while 1:
+        	# Cria conexao TCP com o webserver
+        	connectionSocket, addr = serverSocket.accept()
+        	print('Connection address:', addr)
+
+        	# Cria uma thread para cada porta
+        	thread.start_new_thread(conectaServidor, (connectionSocket,))
 
 
 main()
