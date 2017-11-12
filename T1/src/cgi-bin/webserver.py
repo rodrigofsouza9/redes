@@ -15,6 +15,39 @@ import binascii
 # Ativa o cgi
 cgitb.enable()
 
+# Função CRC16;
+# Referência http://www.feng.pucrs.br/~stemmer/processadores2/trab2-2012-2/crc.html;
+def crc16(data):
+    POLICRC = 0x14003  # Valor do polinomio de crc invertido em hexa;
+    CRC = 0x00000  # Valor inicial do CRC16 (geralmente inicia com 0);
+
+    # 1-Pegar um byte da mensagem;
+    for byte in data:
+        # 2-Fazer um XOR deste byte valor corrente do CRC;
+        CRC = CRC ^ int(byte)
+
+        # 3-Repetir 8 vezes:
+        for i in range(8):
+            # 3.1-Se o bit mais da direita CRC atual for 1,fazer XOR com o polinômio de CRC refletido;
+            if (CRC & 1):
+                CRC = CRC ^ POLICRC
+            # 3.2Deslocar o valor corrente CRC 1 bit para a direita;
+            CRC = CRC >> 1
+
+    return CRC
+
+
+# Função que transforma os bits de opções em uma string;
+# Referência https://stackoverflow.com/questions/10237926/convert-string-to-list-of-bits-and-viceversa;
+def BitsToString(opcoes):
+    saida = ''
+    tam = int(len(opcoes) / 8)
+    for b in range(tam):
+        byte = opcoes[b * 8:(b + 1) * 8]
+        saida = saida + chr(int(byte, 2))
+
+    return saida
+
 # Função que recria um cabecalho para o pacote resposta
 def recriaCabecalho(Version, IHL, Type_of_Service, Total_Length, Identification, Flags, Fragment_Offset, Time_to_Live, Protocol, Header_Checksum, Source_Address, Destination_Address, Options):
 	versao = "{:04b}".format(Version)
