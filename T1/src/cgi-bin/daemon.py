@@ -176,6 +176,30 @@ def conectaServidor(connectionSocket):
 
         	# Atualiza valor do total length com o comprimento do pacote
         	resposta['Total_Length'] = int(len(pacoteRecebido))
+			
+			headerchecksum = crc16(pacoteRecebido['Version'] + pacoteRecebido['IHL'] + pacoteRecebido['Type_of_Service'] + pacoteRecebido['Total_Length'] + pacoteRecebido['Identification'] + pacoteRecebido['Flags'] + pacoteRecebido['Fragment_Offset'] + pacoteRecebido['Time_to_Live'] + pacoteRecebido['Protocol'] + pacoteRecebido['Source_Address'] + pacoteRecebido['Destination_Address'])
+
+        	# Compara o crc calculado com o recebido no header
+        	if headerchecksum != pacoteRecebido['Header_Checksum']:
+            		return 'HeaderChecksum diferente'
+
+        	if pacoteRecebido['Flags'] != 0x000:
+           		return 'Flag incompátivel'
+
+        	if pacoteRecebido['Version'] != 0x0010:
+            		return 'Erro de versão'
+
+        	# Armazena a saida conforme o comando executado
+        	comando = executaComando(pacoteRecebido['Protocol'], pacoteRecebido['Options'])
+
+        	# Cria o pacote resposta concatenando todos os valores do cabecalho
+        	pacoteResposta = recriaCabecalho(resposta['Version'], resposta['IHL'], resposta['Type_of_Service'], resposta['Total_Length'], resposta['Identification'], resposta['Flags'], resposta['Fragment_Offset'], resposta['Time_to_Live'], comando, resposta['Header_Checksum'], resposta['Source_Address'], resposta['Destination_Address'], resposta['Options'])
+
+        	# Envia o pacote resposta pelo socket
+        	connectionSocket.sendall(pacoteResposta.bin.encode())
+
+    	# Encerra a conexao
+    	connectionSocket.close()
 
 
 # Define a main do programa
