@@ -320,6 +320,218 @@ def maquina1(form, host, port, saida_maq1):
         	serverSocket.close()
 
         	return (saida_maq1)
+	
+	
+def maquina2(form, host, port, saida_maq2):
+	# Valores padroes de cabecalho dos pacotes
+    	# Version recebe 2
+    	Version = 2
+    	# IHL recebe 5 que eh o seu valor padrao
+    	IHL = 5
+    	# Type of service recebe 0
+    	Type_of_Service = 0
+    	# Tamanho do pacote
+    	Total_Length = 24
+    	Identification = 1
+    	# Flags recebe o 0
+    	Flags = 0x000
+    	# Fragment_Offset recebe 0
+    	Fragment_Offset = 0
+    	# TTL recebe 127 que eh o padrao(128 -1)
+    	Time_to_Live = 127
+    	Header_Checksum = 0
+    	# o ip 192.168.56.101 convertido para int equivale a 3232249957
+    	# Source_address recebe o endereco ip 192.168.56.101 do html
+    	Source_Address = 3232249957
+    	# Destination_Address recebe o endereco ip 127.0.0.1 que equivale ao inteiro
+    	# 2130706433
+    	Destination_Address = 2130706433
+    	Options = ''
+
+    	if form.getvalue('maq2_ps'):
+
+        	Protocol = 1;
+        	saida_maq2 += 'Comando PS<br><br>'
+
+        	pacoteEnvio = recriaCabecalho(Version, IHL, Type_of_Service, Total_Length, Identification, Flags, Fragment_Offset, Time_to_Live, Protocol, Header_Checksum, Source_Address, Destination_Address, Options)
+
+        	# Cria um socket TCP
+        	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        	# Conecta socket
+        	serverSocket.connect((host, port))
+
+        	# Envia pacote criado
+        	serverSocket.send(pacoteEnvio)
+
+        	# Recebe pacote resposta
+        	pacoteResposta = serverSocket.recv(1024)
+
+        	pacoteResposta = descompactaPacote(pacoteResposta)
+        	pacoteEnvio = descompactaPacote(pacoteEnvio)
+
+        	# Verifica parâmetro Time_to_Live
+        	if (int(pacoteEnvio['Time_to_Live'], 2) != (int(pacoteResposta['Time_to_Live'], 2) + 1)):
+            		return "Erro no parâmetro Time_to_live<br><br>"
+
+        	# Verifica parâmetro Identification
+        	elif (int(pacoteEnvio['Identification'], 2) != (int(pacoteResposta['Identification'], 2) - 1)):
+            		return "Erro no parâmetro Identification<br><br>"
+
+        	# Verifica parâmetro Flags
+        	elif (pacoteResposta['flags'] != '111'):
+            		return "Erro no parâmetro Flags<br><br>"
+
+        	checksum = pacoteResposta['Header_Checksum']
+
+        	headerchecksum = crc16(pacoteResposta['Version'] + pacoteResposta['IHL'] + pacoteResposta['Type_of_Service'] + pacoteResposta['Total_Length'] + pacoteResposta['Identification'] + pacoteResposta['Flags'] + pacoteResposta['Fragment_Offset'] + pacoteResposta['Time_to_Live'] + pacoteResposta['Protocol'] + pacoteResposta['Source_Address'] + pacoteResposta['Destination_Address'])
+
+        	# Verifica parâmetro Header_Checksum
+        	if (headerchecksum != checksum):
+            		return "Erro no parâmetro Header_Checksum<br><br>"
+
+        	# Encerra socket
+        	serverSocket.close()
+
+        	return (saida_maq1)
+
+	if form.getvalue('maq2_df'):
+        	Protocol = 2;
+        	saida_maq2 += 'Comando DF<br><br>'
+
+        	pacoteEnvio = recriaCabecalho(Version, IHL, Type_of_Service, Total_Length, Identification, Flags, Fragment_Offset, Time_to_Live, Protocol, Header_Checksum, Source_Address, Destination_Address, Options)
+
+        	# Cria um socket TCP
+        	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        	# Conecta socket
+        	serverSocket.connect((host, port))
+
+        	# Envia pacote criado
+        	serverSocket.send(pacoteEnvio)
+
+        	# Recebe pacote resposta
+        	pacoteResposta = serverSocket.recv(1024)
+
+        	pacoteResposta = descompactaPacote(pacoteResposta)
+        	pacoteEnvio = descompactaPacote(pacoteEnvio)
+
+        	# Verifica parâmetro Time_to_Live
+       	 	if (int(pacoteEnvio['Time_to_Live'], 2) != (int(pacoteResposta['Time_to_Live'], 2) + 1)):
+            		return "Erro no parâmetro Time_to_live<br><br>"
+
+        	# Verifica parâmetro Identification
+        	elif (int(pacoteEnvio['Identification'], 2) != (int(pacoteResposta['Identification'], 2) - 1)):
+            		return "Erro no parâmetro Identification<br><br>"
+
+        	# Verifica parâmetro Flags
+        	elif (pacoteResposta['flags'] != '111'):
+            		return "Erro no parâmetro Flags<br><br>"
+
+        	checksum = pacoteResposta['Header_Checksum']
+
+        	headerchecksum = crc16(pacoteResposta['Version'] + pacoteResposta['IHL'] + pacoteResposta['Type_of_Service'] + pacoteResposta['Total_Length'] + pacoteResposta['Identification'] + pacoteResposta['Flags'] + pacoteResposta['Fragment_Offset'] + pacoteResposta['Time_to_Live'] + pacoteResposta['Protocol'] + pacoteResposta['Source_Address'] + pacoteResposta['Destination_Address'])
+
+        	# Verifica parâmetro Header_Checksum
+        	if (headerchecksum != checksum):
+            		return "Erro no parâmetro Header_Checksum<br><br>"
+
+        	# Encerra socket
+        	serverSocket.close()
+
+        	return (saida_maq2)
+
+	if form.getvalue('maq2_finger'):
+        	Protocol = 3;
+        	saida_maq2 += 'Comando FINGER<br><br>'
+
+       	 	pacoteEnvio = recriaCabecalho(Version, IHL, Type_of_Service, Total_Length, Identification, Flags, Fragment_Offset, Time_to_Live, Protocol, Header_Checksum, Source_Address, Destination_Address, Options)
+
+        	# Cria um socket TCP
+        	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        	# Conecta socket
+        	serverSocket.connect((host, port))
+
+        	# Envia pacote criado
+        	serverSocket.send(pacoteEnvio)
+
+        	# Recebe pacote resposta
+        	pacoteResposta = serverSocket.recv(1024)
+
+        	pacoteResposta = descompactaPacote(pacoteResposta)
+        	pacoteEnvio = descompactaPacote(pacoteEnvio)
+
+        	# Verifica parâmetro Identification
+        	if (int(pacoteEnvio['Identification'], 2) != (int(pacoteResposta['Identification'], 2) - 1)):
+            		return "Erro no parâmetro Identification<br><br>"
+
+            	# Verifica parâmetro Flags
+        	elif (pacoteResposta['flags'] != '111'):
+            		return "Erro no parâmetro Flags<br><br>"
+
+        	# Verifica parâmetro Time_to_Live
+        	elif (int(pacoteEnvio['Time_to_Live'], 2) != (int(pacoteResposta['Time_to_Live'], 2) + 1)):
+            		return "Erro no parâmetro Time_to_live<br><br>"
+
+        	checksum = pacoteResposta['Header_Checksum']
+
+        	headerchecksum = crc16(pacoteResposta['Version'] + pacoteResposta['IHL'] + pacoteResposta['Type_of_Service'] + pacoteResposta['Total_Length'] + pacoteResposta['Identification'] + pacoteResposta['Flags'] + pacoteResposta['Fragment_Offset'] + pacoteResposta['Time_to_Live'] + pacoteResposta['Protocol'] + pacoteResposta['Source_Address'] + pacoteResposta['Destination_Address'])
+
+        	# Verifica parâmetro Header_Checksum
+        	if (headerchecksum != checksum):
+            		return "Erro no parâmetro Header_Checksum<br><br>"
+
+        	# Encerra socket
+        	serverSocket.close()
+
+        	return (saida_maq2)
+
+	if form.getvalue('maq2_uptime'):
+        	Protocol = 4;
+        	saida_maq2 += 'Comando UPTIME<br><br>'
+
+        	pacoteEnvio = recriaCabecalho(Version, IHL, Type_of_Service, Total_Length, Identification, Flags, Fragment_Offset, Time_to_Live, Protocol, Header_Checksum, Source_Address, Destination_Address, Options)
+
+        	# Cria um socket TCP
+        	serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        	# Conecta socket
+        	serverSocket.connect((host, port))
+
+        	# Envia pacote criado
+       	 	serverSocket.send(pacoteEnvio)
+
+        	# Recebe pacote resposta
+        	pacoteResposta = serverSocket.recv(1024)
+
+        	pacoteResposta = descompactaPacote(pacoteResposta)
+        	pacoteEnvio = descompactaPacote(pacoteEnvio)
+
+        	# Verifica parâmetro Time_to_Live
+        	if (int(pacoteEnvio['Time_to_Live'], 2) != (int(pacoteResposta['Time_to_Live'], 2) + 1)):
+        		return "Erro no parâmetro Time_to_live<br><br>"
+
+        	# Verifica parâmetro Identification
+        	elif (int(pacoteEnvio['Identification'], 2) != (int(pacoteResposta['Identification'], 2) - 1)):
+        		return "Erro no parâmetro Identification<br><br>"
+
+        	# Verifica parâmetro Flags
+        	elif (pacoteResposta['flags'] != '111'):
+        		return "Erro no parâmetro Flags<br><br>"
+
+        	checksum = pacoteResposta['Header_Checksum']
+
+       	 	headerchecksum = crc16(pacoteResposta['Version'] + pacoteResposta['IHL'] + pacoteResposta['Type_of_Service'] + pacoteResposta['Total_Length'] + pacoteResposta['Identification'] + pacoteResposta['Flags'] + pacoteResposta['Fragment_Offset'] + pacoteResposta['Time_to_Live'] + pacoteResposta['Protocol'] + pacoteResposta['Source_Address'] + pacoteResposta['Destination_Address'])
+
+        	# Verifica parâmetro Header_Checksum
+        	if (headerchecksum != checksum):
+        		return "Erro no parâmetro Header_Checksum<br><br>"
+
+        	# Encerra socket
+        	serverSocket.close()
+
+        	return (saida_maq2)
 
 def main():
     	cgitb.enable()
@@ -343,6 +555,7 @@ def main():
     	saida_maq3 = 'Maquina 3<br><br>'
 
     	print(maquina1(form, host, 9001, saida_maq1))
+	print(maquina2(form, host, 9002, saida_maq2))
 
     	print("</body>")
 	print("</html>")
