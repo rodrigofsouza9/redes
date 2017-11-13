@@ -75,6 +75,40 @@ def recriaCabecalho(Version, IHL, Type_of_Service, Total_Length, Identification,
 	novoCabecalho = versao + ihl + typeofservice + totallenght + identification + flags + fragmentoffset + timetolive + protocol + headerchecksum + sourceaddress + destinationaddress + opcoes	
 
     	return novoCabecalho
+		
+# Função que descompacta o pacote;
+# Padrão de cabeçalho estabelecido na descrição do projeto;
+def descompactaPacote(pacote):
+	cabecalho = {}
+    	cabecalho['Version'] = pacote[0:4]
+    	cabecalho['IHL'] = pacote[4:8]
+    	cabecalho['Type_of_Service'] = pacote[8:16]
+    	cabecalho['Total_Length'] = pacote[16:32]
+    	cabecalho['Identification'] = pacote[32:48]
+    	cabecalho['Flags'] = pacote[48:51]
+    	cabecalho['Fragment_Offset'] = pacote[51:64]
+    	cabecalho['Time_to_Live'] = pacote[64:72]
+    	cabecalho['Protocol'] = pacote[72:80]
+    	cabecalho['Header_Checksum'] = pacote[80:96]
+    	cabecalho['Source_Address'] = pacote[96:128]
+    	cabecalho['Destination_Address'] = pacote[128:160]
+
+    	# Chama função que transforma bits em uma string
+    	Options = pacote[160:len(pacote) - 8]
+    	Options = BitsToString(Options)
+
+    	# Verifica se campo opções possui argumentos
+    	# Verifica se argumentos são malicosos
+    	# Elimina argumentos maliciosos
+    	if (Options):
+        	if '|' in Options or ';' in Options or '>' in Options:
+            		cabecalho['Options'] = ''
+        	else:
+            		cabecalho['Options'] = Options
+    	else:
+        	cabecalho['Options'] = ''
+
+    	return cabecalho
 
 def main():
     	cgitb.enable()
